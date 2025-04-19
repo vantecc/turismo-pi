@@ -1,6 +1,4 @@
-// src/pages/Cadastro/index.js
-
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,10 +6,42 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from 'react-native';
 import styles from './style';
+import { registerUser } from '../../api/auth';
+import useGoogleAuth from '../../hooks/useGoogleAuth';
 
-export default function Cadastro() {
+export default function Cadastro({ navigation }) {
+  const [nome, setNome] = useState('');
+  const [sobrenome, setSobrenome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+
+  const { loginWithGooglePrompt } = useGoogleAuth(navigation); // ✅ fora da função
+
+  const handleRegister = async () => {
+    if (!nome || !sobrenome || !telefone || !email || !senha) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
+    try {
+      const user = await registerUser({
+        nome,
+        sobrenome,
+        telefone,
+        email,
+        senha,
+      });
+      Alert.alert('Cadastro realizado', `Bem-vindo, ${user.nome}!`);
+      navigation.navigate('Login');
+    } catch (error) {
+      Alert.alert('Erro', error.toString());
+    }
+  };
+
   const socialIcons = {
     Facebook: require('../../assets/facebook.png'),
     Google: require('../../assets/google.png'),
@@ -26,40 +56,66 @@ export default function Cadastro() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>
-          Será muito bom estar com você.
-        </Text>
+        <Text style={styles.title}>Será muito bom estar com você.</Text>
       </View>
 
       <View style={styles.subHeader}>
         <Text style={styles.subtitle}>Criar conta</Text>
       </View>
 
-      {/* Nome e Sobrenome */}
       <View style={styles.nameRow}>
-        <TextInput style={styles.inputHalf} placeholder="Nome" placeholderTextColor="#132e209e" />
-        <TextInput style={styles.inputHalf} placeholder="Sobrenome" placeholderTextColor="#132e209e" />
+        <TextInput
+          style={styles.inputHalf}
+          placeholder="Nome"
+          placeholderTextColor="#132e209e"
+          value={nome}
+          onChangeText={setNome}
+        />
+        <TextInput
+          style={styles.inputHalf}
+          placeholder="Sobrenome"
+          placeholderTextColor="#132e209e"
+          value={sobrenome}
+          onChangeText={setSobrenome}
+        />
       </View>
 
-      {/* Telefone, Email, Senha */}
-      <TextInput style={styles.inputFull} placeholder="Telefone" placeholderTextColor="#132e209e" />
-      <TextInput style={styles.inputFull} placeholder="Email" placeholderTextColor="#132e209e" />
-      <TextInput style={styles.inputFull} placeholder="Senha" placeholderTextColor="#132e209e" secureTextEntry />
+      <TextInput
+        style={styles.inputFull}
+        placeholder="Telefone"
+        placeholderTextColor="#132e209e"
+        value={telefone}
+        onChangeText={setTelefone}
+        keyboardType="phone-pad"
+      />
+      <TextInput
+        style={styles.inputFull}
+        placeholder="Email"
+        placeholderTextColor="#132e209e"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.inputFull}
+        placeholder="Senha"
+        placeholderTextColor="#132e209e"
+        value={senha}
+        onChangeText={setSenha}
+        secureTextEntry
+      />
 
-      {/* Botão cadastrar */}
-      <TouchableOpacity style={styles.registerButton}>
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      {/* Termos */}
       <Text style={styles.terms}>
         Ao criar uma conta, você concorda com nossos Termos de Serviço
         e Política de Privacidade.
       </Text>
 
-      {/* Botões sociais */}
       <View style={styles.socialArea}>
         {socialOptions.map((option, index) => (
           <TouchableOpacity
@@ -72,6 +128,7 @@ export default function Cadastro() {
                 borderColor: option.border ? '#496d5b33' : 'transparent',
               },
             ]}
+            onPress={option.provider === 'Google' ? loginWithGooglePrompt : undefined}
           >
             <View style={styles.socialContent}>
               <Image source={socialIcons[option.provider]} style={styles.socialIcon} />

@@ -1,6 +1,4 @@
-// src/pages/Login/index.js
-
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,10 +6,33 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import styles from './style';
+import { loginUser } from '../../api/auth';
+import useGoogleAuth from '../../hooks/useGoogleAuth';
 
-export default function Login() {
+export default function Login({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+
+  const { loginWithGooglePrompt } = useGoogleAuth(navigation); // ✅ aqui fora da função
+
+  const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert('Erro', 'Preencha email e senha.');
+      return;
+    }
+
+    try {
+      const user = await loginUser({ email, senha });
+      Alert.alert('Login realizado', `Bem-vindo(a), ${user.nome}!`);
+      // navigation.navigate('Home'); // ative se desejar
+    } catch (error) {
+      Alert.alert('Erro ao entrar', error.toString());
+    }
+  };
+
   const socialIcons = {
     Facebook: require('../../assets/facebook.png'),
     Google: require('../../assets/google.png'),
@@ -27,73 +48,51 @@ export default function Login() {
   return (
     <View style={styles.wrapper}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Logo */}
-        <Image
-          source={require('../../assets/meupiaui1.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Image source={require('../../assets/meupiaui1.png')} style={styles.logo} resizeMode="contain" />
 
-        {/* Personagem */}
         <View style={styles.characterContainer}>
-          <Image
-            source={require('../../assets/oxe.png')}
-            style={styles.character}
-            resizeMode="contain"
-          />
+          <Image source={require('../../assets/oxe.png')} style={styles.character} resizeMode="contain" />
         </View>
 
-        {/* Criar Conta */}
-        <TouchableOpacity style={styles.registerLink}>
+        <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate('Cadastro')}>
           <Text style={styles.registerText}>Criar uma conta</Text>
         </TouchableOpacity>
 
-        {/* Formulário */}
         <View style={styles.card}>
           <TextInput
             style={styles.input}
             placeholder="Digite seu Email"
             placeholderTextColor="#132e209e"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
           <TextInput
             style={styles.input}
             placeholder="Digite sua senha"
             placeholderTextColor="#132e209e"
             secureTextEntry
+            value={senha}
+            onChangeText={setSenha}
           />
 
-          {/* Lembrar senha */}
-          <View style={styles.rememberRow}>
-            <View style={styles.checkboxContainer}>
-              <View style={styles.checkbox} />
-              <Text style={styles.checkboxLabel}>LEMBRAR SENHA</Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.forgotText}>Esqueci a senha</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Conectar */}
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Conectar</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Botões sociais */}
+        {/* Botões sociais estilizados com ação no botão do Google */}
         <View style={styles.socialArea}>
           {['Facebook', 'Google', 'Apple'].map((provider, i) => (
             <TouchableOpacity
               key={i}
               style={[styles.socialButton, styles[`btn${provider}`]]}
+              onPress={provider === 'Google' ? loginWithGooglePrompt : undefined}
             >
               <View style={styles.socialContent}>
                 <Image source={socialIcons[provider]} style={styles.socialIcon} />
-                <Text
-                  style={[
-                    styles.socialButtonText,
-                    { color: buttonTextColor[provider] },
-                  ]}
-                >
+                <Text style={[styles.socialButtonText, { color: buttonTextColor[provider] }]}>
                   Entrar com {provider}
                 </Text>
               </View>
