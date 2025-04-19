@@ -21,16 +21,14 @@ pages.forEach((page) => {
   const indexPath = path.join(pagePath, "index.js");
   const stylePath = path.join(pagePath, "style.js");
 
-  // Cria a pasta se não existir
   if (!fs.existsSync(pagePath)) {
     fs.mkdirSync(pagePath, { recursive: true });
     console.log(`📁 Pasta criada: ${page}`);
   }
 
-  // Nome do componente (só o nome da última parte do path)
+
   const componentName = page.split("/").pop();
 
-  // Cria index.js
   if (!fs.existsSync(indexPath)) {
     fs.writeFileSync(
       indexPath,
@@ -39,7 +37,6 @@ pages.forEach((page) => {
     console.log(`✅ index.js criado em: ${page}`);
   }
 
-  // Cria style.js
   if (!fs.existsSync(stylePath)) {
     fs.writeFileSync(
       stylePath,
