@@ -14,7 +14,8 @@ class UserResponse(BaseModel):
     email: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # ← CORRETO para Pydantic v2
+
 
 # Dados enviados ao fazer login
 class UserLogin(BaseModel):
