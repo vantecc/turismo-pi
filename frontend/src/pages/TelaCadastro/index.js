@@ -26,21 +26,23 @@ export default function Cadastro({ navigation }) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
-
+  
+    const name = `${nome} ${sobrenome}`;
+    const password = senha;
+    
+    console.log({ name, email, password }); // ← Adicione isso
+    
     try {
-      const user = await registerUser({
-        nome,
-        sobrenome,
-        telefone,
-        email,
-        senha,
-      });
-      Alert.alert('Cadastro realizado', `Bem-vindo, ${user.nome}!`);
+      const user = await registerUser({ name, email, password });
+      Alert.alert('Cadastro realizado', `Bem-vindo, ${user.name}!`);
       navigation.navigate('Login');
     } catch (error) {
+      console.log("Erro no cadastro:", error); // ← Log do erro
       Alert.alert('Erro', error.toString());
     }
+    
   };
+  
 
   const socialIcons = {
     Facebook: require('../../assets/facebook.png'),

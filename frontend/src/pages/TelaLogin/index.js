@@ -11,6 +11,8 @@ import {
 import styles from './style';
 import { loginUser } from '../../api/auth';
 import useGoogleAuth from '../../hooks/useGoogleAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -23,15 +25,20 @@ export default function Login({ navigation }) {
       Alert.alert('Erro', 'Preencha email e senha.');
       return;
     }
-
+  
     try {
-      const user = await loginUser({ email, senha });
-      Alert.alert('Login realizado', `Bem-vindo(a), ${user.nome}!`);
-      // navigation.navigate('Home'); // ative se desejar
+      const { access_token } = await loginUser({ email, password: senha });
+  
+      // Salvar token com AsyncStorage
+      await AsyncStorage.setItem('token', access_token);
+  
+      Alert.alert('Login realizado com sucesso!');
+      navigation.navigate('Home'); // ou sua tela principal
     } catch (error) {
       Alert.alert('Erro ao entrar', error.toString());
     }
   };
+  
 
   const socialIcons = {
     Facebook: require('../../assets/facebook.png'),

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://10.0.2.2:8000';
+const API_BASE_URL = 'http://192.168.0.104:8000'; // ← seu IP local
+
  // ou o IP da sua máquina se estiver testando no celular
 
 export const registerUser = async (userData) => {
