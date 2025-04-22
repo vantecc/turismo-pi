@@ -1,6 +1,6 @@
 // src/pages/TelaDashboard/index.js
-
 import React from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -16,6 +16,12 @@ import img2 from '../../assets/setecidades.png';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function DashboardScreen() {
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const isDashboard = route.name === 'Dashboard';
+  const isMunicipios = route.name === 'Municipios';
+
   const categories = [
     { name: 'Natureza' },
     { name: 'História' },
@@ -124,11 +130,16 @@ export default function DashboardScreen() {
         </ScrollView>
       </ScrollView>
 
-      {/* Footer com navegação */}
+      {/* Footer com navegação dinâmica */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton}>
-          <FontAwesome name="home" size={24} color="#0f9d58" />
-          <Text style={styles.footerLabel}>Home</Text>
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => navigation.navigate('Dashboard')}
+        >
+          <FontAwesome name="home" size={24} color={isDashboard ? '#0f9d58' : '#999'} />
+          <Text style={[styles.footerLabel, { color: isDashboard ? '#0f9d58' : '#999' }]}>
+            Home
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.centerButtonWrapper}>
@@ -140,9 +151,14 @@ export default function DashboardScreen() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.footerButton}>
-          <FontAwesome name="map" size={24} color="#999" />
-          <Text style={[styles.footerLabel, { color: '#999' }]}>Municípios</Text>
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => navigation.navigate('Municipios')}
+        >
+          <FontAwesome name="map" size={24} color={isMunicipios ? '#0f9d58' : '#999'} />
+          <Text style={[styles.footerLabel, { color: isMunicipios ? '#0f9d58' : '#999' }]}>
+            Municípios
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
