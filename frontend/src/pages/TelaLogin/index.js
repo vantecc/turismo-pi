@@ -12,6 +12,7 @@ import styles from './style';
 import { loginUser } from '../../api/auth';
 import useGoogleAuth from '../../hooks/useGoogleAuth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../api/auth'; 
 
 
 export default function Login({ navigation }) {
@@ -20,25 +21,17 @@ export default function Login({ navigation }) {
 
   const { loginWithGooglePrompt } = useGoogleAuth(navigation); // ✅ aqui fora da função
 
-  const handleLogin = async () => {
-    if (!email || !senha) {
-      Alert.alert('Erro', 'Preencha email e senha.');
-      return;
-    }
-  
+   
+  async function loginUser(email, senha) {
     try {
-      const { access_token } = await loginUser({ email, password: senha });
-  
-      // Salvar token com AsyncStorage
-      await AsyncStorage.setItem('token', access_token);
-  
-      Alert.alert('Login realizado com sucesso!');
-      navigation.navigate('Home'); // ou sua tela principal
+      const response = await api.post('/login/', { email, senha });
+      const { token } = response.data;
+      await AsyncStorage.setItem('userToken', token);
+      navigation.navigate('Dashboard');
     } catch (error) {
-      Alert.alert('Erro ao entrar', error.toString());
+      Alert.alert('Erro', 'Email ou senha inválidos.');
     }
-  };
-  
+  }
 
   const socialIcons = {
     Facebook: require('../../assets/facebook.png'),
@@ -84,7 +77,7 @@ export default function Login({ navigation }) {
             onChangeText={setSenha}
           />
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity style={styles.loginButton} onPress={() => loginUser(email, senha)}>
             <Text style={styles.loginButtonText}>Conectar</Text>
           </TouchableOpacity>
         </View>
