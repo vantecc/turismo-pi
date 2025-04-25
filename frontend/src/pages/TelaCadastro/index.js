@@ -27,17 +27,18 @@ export default function Cadastro({ navigation }) {
       return;
     }
   
-    const name = `${nome} ${sobrenome}`;
+    const username = `${nome}${sobrenome}`;
     const password = senha;
     
-    console.log({ name, email, password }); // ← Adicione isso
+
+  console.log({ username, email, password }); // ← Adicione isso
     
     try {
-      const user = await registerUser({ name, email, password });
-      Alert.alert('Cadastro realizado', `Bem-vindo, ${user.name}!`);
+      const user = await registerUser({ username, email, password });
+      Alert.alert('Cadastro realizado', `Bem-vindo, ${user.username}!`);
       navigation.navigate('Login');
     } catch (error) {
-      console.log("Erro no cadastro:", error); // ← Log do erro
+      console.log("Erro no cadastro:", error); 
       Alert.alert('Erro', error.toString());
     }
     
