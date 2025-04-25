@@ -19,31 +19,31 @@ export default function Cadastro({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const { loginWithGooglePrompt } = useGoogleAuth(navigation); // ✅ fora da função
+  const { loginWithGooglePrompt } = useGoogleAuth(navigation);
 
   const handleRegister = async () => {
     if (!nome || !sobrenome || !telefone || !email || !senha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
-  
-    const username = `${nome}${sobrenome}`;
-    const password = senha;
-    
 
-  console.log({ username, email, password }); // ← Adicione isso
-    
+    const name = `${nome}${sobrenome}`.replace(/\s/g, ''); // remove espaços
+
+    console.log({ name, email, password: senha });
+
     try {
-      const user = await registerUser({ username, email, password });
+      const user = await registerUser({ name, email, password: senha });
       Alert.alert('Cadastro realizado', `Bem-vindo, ${user.username}!`);
       navigation.navigate('Login');
     } catch (error) {
-      console.log("Erro no cadastro:", error); 
-      Alert.alert('Erro', error.toString());
+      console.log("Erro no cadastro:", error);
+      const msg =
+        error?.message?.includes('{') && error.message.length < 300
+          ? JSON.stringify(JSON.parse(error.message), null, 2)
+          : 'Não foi possível cadastrar. Verifique os dados.';
+      Alert.alert('Erro ao cadastrar', msg);
     }
-    
   };
-  
 
   const socialIcons = {
     Facebook: require('../../assets/facebook.png'),
