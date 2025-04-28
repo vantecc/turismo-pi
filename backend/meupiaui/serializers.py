@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import TouristPoint
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -16,3 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+class TouristPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TouristPoint
+        fields = '__all__'

@@ -33,7 +33,7 @@ export default function Cadastro({ navigation }) {
 
     try {
       const user = await registerUser({ name, email, password: senha });
-      Alert.alert('Cadastro realizado', `Bem-vindo, ${user.username}!`);
+      Alert.alert('Cadastro realizado', `Seja muito bem vindo(a)`);
       navigation.navigate('Login');
     } catch (error) {
       console.log("Erro no cadastro:", error);

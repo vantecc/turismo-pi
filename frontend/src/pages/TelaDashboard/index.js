@@ -1,6 +1,7 @@
 // src/pages/TelaDashboard/index.js
 import React from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,8 +15,23 @@ import AttractionCard from '../../components/AttractionCard';
 import img1 from '../../assets/serracapi.png';
 import img2 from '../../assets/setecidades.png';
 import { FontAwesome } from '@expo/vector-icons';
+import { getTouristPoints } from '../../api/services';
 
 export default function DashboardScreen() {
+
+  const [data, setData] = useState([])
+
+
+  useEffect(()=>{
+    async function savePoints(){
+      const response = await getTouristPoints()
+      setData(response)
+    }
+
+    savePoints()
+    
+  }, [])
+
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -102,7 +118,7 @@ export default function DashboardScreen() {
 
         {/* Lista completa de municípios */}
         <TouchableOpacity style={styles.exploreButton}>
-          <Text style={styles.exploreText}>Explorar lista completa de municípios</Text>
+          <Text style={styles.exploreText}>{data.name}</Text>
         </TouchableOpacity>
 
         {/* Título da seção */}
@@ -117,14 +133,14 @@ export default function DashboardScreen() {
           style={styles.carousel}
           contentContainerStyle={{ paddingRight: 20 }}
         >
-          {attractions.map((item) => (
+          {data.map((item) => (
             <AttractionCard
               key={item.id}
               name={item.name}
-              category={item.category}
-              image={item.image}
-              rating={item.rating}
-              bookmarked={item.bookmarked}
+              category={'Categoria'}
+              image={img1}
+              rating={4}
+              bookmarked={true}
             />
           ))}
         </ScrollView>

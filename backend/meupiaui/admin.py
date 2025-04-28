@@ -1,3 +1,4 @@
 from django.contrib import admin
+from .models import TouristPoint
 
-# Register your models here.
+admin.site.register(TouristPoint)

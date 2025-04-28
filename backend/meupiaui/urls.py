@@ -1,8 +1,14 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import TouristPointViewSet
 from rest_framework.authtoken.views import obtain_auth_token
 from .views import RegisterView
 
+router = DefaultRouter()
+router.register(r'tourist-points', TouristPointViewSet)
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('login/', obtain_auth_token),
     path('register/', RegisterView.as_view()),
 ]
