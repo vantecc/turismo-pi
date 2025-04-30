@@ -6,7 +6,6 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Função de cadastro
 export async function registerUser({ name, email, password }) {
   const response = await api.post('/register/', {
     username: name,
@@ -17,5 +16,14 @@ export async function registerUser({ name, email, password }) {
   return response.data;
 }
 
-
 export default api;
+
+export async function loginUser({ username, password }) {
+  const response = await api.post('/token-auth/', {
+    username,
+    password,
+  });
+
+  return response.data;
+}
+

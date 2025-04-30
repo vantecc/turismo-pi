@@ -9,27 +9,31 @@ import {
   Alert,
 } from 'react-native';
 import styles from './style';
-import { loginUser } from '../../api/auth';
+import { loginUser as loginRequest } from '../../api/auth'; // renomeamos para evitar conflito
 import useGoogleAuth from '../../hooks/useGoogleAuth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../../api/auth'; 
-
+import api from '../../api/auth';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const { loginWithGooglePrompt } = useGoogleAuth(navigation); // ✅ aqui fora da função
+  const { loginWithGooglePrompt } = useGoogleAuth(navigation);
 
-   
-  async function loginUser(email, senha) {
+  async function handleLogin() {
     try {
-      const response = await api.post('/login/', { email, senha });
-      const { token } = response.data;
+      const response = await loginRequest({
+        username: email,
+        password: senha,
+      });
+
+      const { token } = response;
       await AsyncStorage.setItem('userToken', token);
+      api.defaults.headers.common['Authorization'] = `Token ${token}`;
+
       navigation.navigate('Dashboard');
     } catch (error) {
-      Alert.alert('Erro', 'Email ou senha inválidos.');
+      Alert.alert('Erro', 'Nome, sobrenome ou senha inválidos.');
     }
   }
 
@@ -61,7 +65,7 @@ export default function Login({ navigation }) {
         <View style={styles.card}>
           <TextInput
             style={styles.input}
-            placeholder="Digite seu Email"
+            placeholder="Digite seu nome e sobrenome sem espaço"
             placeholderTextColor="#132e209e"
             value={email}
             onChangeText={setEmail}
@@ -77,12 +81,11 @@ export default function Login({ navigation }) {
             onChangeText={setSenha}
           />
 
-          <TouchableOpacity style={styles.loginButton} onPress={() => loginUser(email, senha)}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Conectar</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Botões sociais estilizados com ação no botão do Google */}
         <View style={styles.socialArea}>
           {['Facebook', 'Google', 'Apple'].map((provider, i) => (
             <TouchableOpacity
